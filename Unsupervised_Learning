@@ -1,1 +1,71 @@
 
+from sklearn.cluster import KMeans
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from matplotlib import pyplot as plt
+from sklearn.datasets import load_iris
+
+
+iris = load_iris()
+
+df = pd.DataFrame(iris.data,columns=iris.feature_names)
+df.head()
+
+df['flower'] = iris.target
+
+
+df.drop(['sepal length (cm)', 'sepal width (cm)', 'flower'],axis='columns',inplace=True)
+
+#Your Task Is Made Cluster According To Length And Width
+
+
+
+#Elbow Method
+sse = []
+
+k_rng = range(1,30)
+
+
+for k in k_rng:
+    km = KMeans(n_clusters=k)
+    km.fit_predict(df[['petal length (cm)','petal width (cm)']])
+    sse.append(km.inertia_)
+    
+#Visaulize The Results
+    
+plt.xlabel("K")
+plt.ylabel("Sum of Sqaure Error")
+plt.plot(k_rng,sse)
+
+
+
+
+
+
+
+
+km = KMeans(n_clusters=4)
+y_predicted = km.fit_predict(df[['petal length (cm)', 'petal width (cm)']])
+
+df['cluster'] = y_predicted
+
+#Clusters Centroid Position
+
+km.cluster_centers_
+
+#Visualization Part
+
+df1 = df[df.cluster ==0]
+df2 = df[df.cluster ==1]
+df3 = df[df.cluster ==2]
+df4 = df[df.cluster ==3]
+
+plt.scatter(df1['petal length (cm)'],df1['petal width (cm)'],color = 'green')
+plt.scatter(df2['petal length (cm)'],df2['petal width (cm)'],color = 'red')
+plt.scatter(df3['petal length (cm)'],df3['petal width (cm)'],color = 'Black')
+plt.scatter(df4['petal length (cm)'],df4['petal width (cm)'],color = 'yellow')
+
+plt.scatter(km.cluster_centers_[:,0],km.cluster_centers_[:,1],color = 'Black',marker ='*',label = 'centroid')
+
+plt.xlabel("petal length")
+plt.ylabel("petal width (cm)")
